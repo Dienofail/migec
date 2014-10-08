@@ -135,6 +135,13 @@ def getSeed = { String barcode ->
     Pattern.compile(barcode.replaceAll(/./) { redundancy."$it" ?: '[ATGC]' }) // redundancy has only uppecase
 }
 
+def getSeedSeq = { String barcode ->
+	def returnSeq = barcode.substring(0, 8)
+	//println(returnSeq.length())
+	assert returnSeq.length() == 8
+	return returnSeq
+}
+
 def parseUmiPositions = { String barcode ->
     def posList = new ArrayList<Integer>()
     for (int i = 0; i < barcode.length(); i++)
@@ -193,6 +200,42 @@ def findAllMatches = { String seq, Pattern seed ->  // all matches for seed
     }
     positions
 }
+
+def HammingDistance = {String seq1, String seq2 ->
+	int distance = 0
+	//println("[${new Date()} $scriptName] Seq 1 length is " + seq1.length())
+	//println("[${new Date()} $scriptName] Seq 2 length is " + seq2.length())
+
+	assert seq1.length() == seq2.length()
+	for (int i = 0; i < seq1.length(); i++)
+	{
+		if (seq1.charAt(i) != seq2.charAt(i))
+		{
+			distance++
+		}
+	}
+	return distance
+}
+
+
+def findAllFuzzyMatches = {String seq, String barcode, int threshold ->
+	def positions = new ArrayList<Integer>()
+	def seedSeqBarcode = getSeedSeq(barcode)
+	for (int i = 0; i < 4; i++)
+	{
+		def currentSubString = seq.substring(i, i+seedSeqBarcode.length())
+		assert currentSubString.length() == seedSeqBarcode.length()
+		def currentHammingDistance = HammingDistance(seedSeqBarcode, currentSubString)
+		//println "Iterating through ${i} with hamming distance ${currentHammingDistance}"
+		if (currentHammingDistance < threshold)
+		{
+			positions.add(i)
+			return positions
+		}
+	}
+	return positions
+}
+
 def lq = mmData[0]
 def hasFuzzyMatch = { String barcode, String seq, String qual, int from, int bcIndex, int slave -> // fuzzy match from seed match
     int nBadMMs = 0, nGoodMMs = 0
@@ -210,11 +253,19 @@ def hasFuzzyMatch = { String barcode, String seq, String qual, int from, int bcI
 }
 def findMatch = { String barcode, Pattern seed, String seq, String qual, int bcIndex, int slave ->
     def seedOccurences = findAllMatches(seq, seed) // All seed occurences
-
+	
     for (int i = 0; i < seedOccurences.size(); i++) {
         if (hasFuzzyMatch(barcode, seq, qual, seedOccurences[i], bcIndex, slave))  // Exhaustive search
             return seedOccurences[i] // till first best match
     }
+	
+	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,3)
+	
+	if (seedFuzzyOccurences.size() >= 1)
+	{
+		return seedFuzzyOccurences[0]
+	}
+	
     return -1
 }
 

@@ -118,10 +118,10 @@ def DEBUG = opt.'debug',
 def timestamp = {
     "[${new Date()} $SCRIPT_NAME]"
 }
-
+//
 def blastPath = opt.'blast-path' ?: ""
 blastPath = blastPath.length() > 0 ? blastPath + "/" : ""
-
+//def blastPath = 'C:\\Program Files\\NCBI\\blast-2.2.30+\\bin\\'
 // Check for BLAST installation
 try {
     ["${blastPath}convert2blastmask", "${blastPath}makeblastdb", "${blastPath}blastn"].each { it.execute().waitFor() }
@@ -153,15 +153,15 @@ if (new File(outputFileName).parentFile)
 // BLAST SETTINGS
 int ALLELE_TAIL_INNER = 10, ALLELE_TAIL_OUTER = 6,
     ALLELE_TAIL_V_MAX = 40, ALLELE_TAIL_J_MAX = 20,
-    GAP_OPEN = 5, GAP_EXTEND = 2, WORD_SIZE = 7, REWARD = 2, PENALTY = -3
+    GAP_OPEN = 5, GAP_EXTEND = 2, WORD_SIZE = 6, REWARD = 2, PENALTY = -3
 
 String BLAST_FLAGS = "-lcase_masking"
 
 // BLAST results filtering
 int TOP_SEQS = 1,
-    MIN_SEGMENT_IDENT = 7,
-    MIN_CDR_LEN = 7, // at least 1 nt + conserved AAs
-    MAX_CDR_LEN = 70
+    MIN_SEGMENT_IDENT = 6,
+    MIN_CDR_LEN = 6, // at least 1 nt + conserved AAs
+    MAX_CDR_LEN = 80
 
 // LOGGING
 String logFileName = opt.'log-file' ?: null
@@ -305,8 +305,16 @@ inputFileNames.each { inputFileName ->
         reader.readLine()
         reader.readLine()
 
-        if (counter % 1000000 == 0)
+        if (counter % 100000 == 0)
+		{
             println "${timestamp()} $counter reads processed, $uniqueCounter unique"
+		}
+			
+		if (counter % 100000 == 0)
+    	{
+			println "100,000 sequence sanalyzed, breaking!"
+			break	
+		}
     }
 }
 
@@ -333,7 +341,7 @@ for (int p = 0; p < THREADS; p++) { // split fasta for blast parallelizaiton
 
         // A trick to pass -outfmt argument correctly
         def blastCmd = ["${blastPath}blastn",
-                        "-query", "${queryFilePrefix}_${p}.fa",
+                        "-query", "${queryFilePrefix}_${p}.fa", "-evalue", "1750", "-task", "blastn-short",
                         BLAST_FLAGS.split(" "),
                         "-gapopen", "$GAP_OPEN", "-gapextend", "$GAP_EXTEND",
                         "-word_size", "$WORD_SIZE", "-reward", "$REWARD", "-penalty", "$PENALTY",

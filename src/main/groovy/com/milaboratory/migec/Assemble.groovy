@@ -153,12 +153,14 @@ String seq2 = ""
 int MIN_READ_SZ = 2 * anchorRegion + 1 + offsetRange
 while ((header1 = reader1.readLine()) != null) {
     seq1 = reader1.readLine()
+	//println "My seq1 is ${seq1}"
     reader1.readLine()
     reader1.readLine()
 
     if (paired) {
         reader2.readLine() // Skip header of read 2
         seq2 = reader2.readLine()
+		//println "My seq2 is ${seq2}"
         reader2.readLine()
         reader2.readLine()
     }
@@ -264,11 +266,13 @@ GParsPool.withPool THREADS, {
         nReadsInGoodMigsCurrent[1] = nReadsInGoodMigs[1].get()
         nGoodMigsCurrent[2] = nGoodMigs[2].get()
         nReadsInGoodMigsCurrent[2] = nReadsInGoodMigs[2].get()
-
+		
         // Search for collisions
         boolean noCollision = true
         if (filterCollisions) {
             // A standard hash-based 1-loop single-mm search..
+			// Print statement to indicate collision search is starting. 
+			println "Filter Collisions Starting"
             char[] umiCharArray = umi.toCharArray()
             char oldChar
             for (int i = 0; i < umiCharArray.length; i++) {
@@ -302,6 +306,7 @@ GParsPool.withPool THREADS, {
                 mig.each { Map.Entry<String, Integer> read ->
                     for (int offset = -offsetRange; offset <= offsetRange; offset++) {
                         String coreSeq = getCoreSeq(read.key, offset)
+						println "Currently testing ${coreSeq}"
                         int[] coreSeqData = coreSeqMap.get(coreSeq)
                         if (coreSeqData == null)
                             coreSeqMap.put(coreSeq, coreSeqData = new int[2])
