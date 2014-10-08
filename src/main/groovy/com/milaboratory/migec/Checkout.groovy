@@ -137,7 +137,7 @@ def getSeed = { String barcode ->
 
 def getSeedSeq = { String barcode ->
 	def returnSeq = barcode.substring(0, 8)
-	//println(returnSeq.length())
+	//println(returnSeq)
 	assert returnSeq.length() == 8
 	return returnSeq
 }
@@ -221,16 +221,21 @@ def HammingDistance = {String seq1, String seq2 ->
 def findAllFuzzyMatches = {String seq, String barcode, int threshold ->
 	def positions = new ArrayList<Integer>()
 	def seedSeqBarcode = getSeedSeq(barcode)
-	for (int i = 0; i < 4; i++)
+	//assert seedSeqBarcode.length() == 8
+	for (int i = 0; i < 5; i++)
 	{
 		def currentSubString = seq.substring(i, i+seedSeqBarcode.length())
 		assert currentSubString.length() == seedSeqBarcode.length()
 		def currentHammingDistance = HammingDistance(seedSeqBarcode, currentSubString)
+		if (currentHammingDistance < 3)
+		{
+			println "Iterating through ${i} comparing ${currentSubString} with ${seedSeqBarcode} for a score of ${currentHammingDistance}"
+		}
 		//println "Iterating through ${i} with hamming distance ${currentHammingDistance}"
 		if (currentHammingDistance < threshold)
 		{
 			positions.add(i)
-			return positions
+			//return positions
 		}
 	}
 	return positions
@@ -259,7 +264,7 @@ def findMatch = { String barcode, Pattern seed, String seq, String qual, int bcI
             return seedOccurences[i] // till first best match
     }
 	
-	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,3)
+	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,4)
 	
 	if (seedFuzzyOccurences.size() >= 1)
 	{

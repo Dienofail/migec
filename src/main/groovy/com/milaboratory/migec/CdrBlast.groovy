@@ -152,15 +152,15 @@ if (new File(outputFileName).parentFile)
 
 // BLAST SETTINGS
 int ALLELE_TAIL_INNER = 10, ALLELE_TAIL_OUTER = 6,
-    ALLELE_TAIL_V_MAX = 40, ALLELE_TAIL_J_MAX = 20,
+    ALLELE_TAIL_V_MAX = 140, ALLELE_TAIL_J_MAX = 30,
     GAP_OPEN = 5, GAP_EXTEND = 2, WORD_SIZE = 6, REWARD = 2, PENALTY = -3
 
 String BLAST_FLAGS = "-lcase_masking"
 
 // BLAST results filtering
 int TOP_SEQS = 1,
-    MIN_SEGMENT_IDENT = 6,
-    MIN_CDR_LEN = 6, // at least 1 nt + conserved AAs
+    MIN_SEGMENT_IDENT = 5,
+    MIN_CDR_LEN = 5, // at least 1 nt + conserved AAs
     MAX_CDR_LEN = 80
 
 // LOGGING
@@ -206,6 +206,7 @@ resFile.splitEachLine("\t") {
         def type = it[2].charAt(0).toUpperCase(), seq = it[5], refPoint = Integer.parseInt(it[4])
 
         // Mask all except seed region
+		//println(refPoint)
         seq = seq.toLowerCase()
         seq = seq.toCharArray()
         int tailFrom = (type == "V" ? ALLELE_TAIL_OUTER : ALLELE_TAIL_INNER),
@@ -220,6 +221,7 @@ resFile.splitEachLine("\t") {
             if (ALLELE_TAIL_V_MAX <= refPoint) {
                 seq = seq.substring(refPoint - ALLELE_TAIL_V_MAX)
                 refPoint = ALLELE_TAIL_V_MAX
+				println("V " + refPoint)
             }
         } else
             seq = seq.substring(0, Math.min(refPoint + ALLELE_TAIL_J_MAX + 1, seq.length()))
