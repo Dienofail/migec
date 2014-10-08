@@ -309,12 +309,6 @@ inputFileNames.each { inputFileName ->
 		{
             println "${timestamp()} $counter reads processed, $uniqueCounter unique"
 		}
-			
-		if (counter % 100000 == 0)
-    	{
-			println "100,000 sequence sanalyzed, breaking!"
-			break	
-		}
     }
 }
 
