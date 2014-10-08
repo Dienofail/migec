@@ -264,7 +264,7 @@ def findMatch = { String barcode, Pattern seed, String seq, String qual, int bcI
             return seedOccurences[i] // till first best match
     }
 	
-	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,4)
+	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,3)
 	
 	if (seedFuzzyOccurences.size() >= 1)
 	{
@@ -421,7 +421,7 @@ def wrapRead = { String[] readData, StringBuilder[] umiData, int readIndex, Stri
             counters.get(sampleId)[1].incrementAndGet()
     }
 
-    if (nReads % 25000 == 0)
+    if (nReads % 250000 == 0)
         println "[${new Date()} $scriptName] Processed $nReads, " +
                 "identified $nGoodReads (${((int) (10000 * (double) nGoodReads / (double) nReads)) / 100}%), " +
                 (overlap ? "overlapped ${((int) (10000 * (double) overlapCount / (double) nGoodReads)) / 100}% of them, " : "") +
