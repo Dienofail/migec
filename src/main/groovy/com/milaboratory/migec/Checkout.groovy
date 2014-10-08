@@ -227,10 +227,10 @@ def findAllFuzzyMatches = {String seq, String barcode, int threshold ->
 		def currentSubString = seq.substring(i, i+seedSeqBarcode.length())
 		assert currentSubString.length() == seedSeqBarcode.length()
 		def currentHammingDistance = HammingDistance(seedSeqBarcode, currentSubString)
-		if (currentHammingDistance < 3)
-		{
-			println "Iterating through ${i} comparing ${currentSubString} with ${seedSeqBarcode} for a score of ${currentHammingDistance}"
-		}
+//		if (currentHammingDistance < 3)
+//		{
+//			println "Iterating through ${i} comparing ${currentSubString} with ${seedSeqBarcode} for a score of ${currentHammingDistance}"
+//		}
 		//println "Iterating through ${i} with hamming distance ${currentHammingDistance}"
 		if (currentHammingDistance < threshold)
 		{
