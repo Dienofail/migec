@@ -258,10 +258,10 @@ def hasFuzzyMatch = { String barcode, String seq, String qual, int from, int bcI
 }
 def findMatch = { String barcode, Pattern seed, String seq, String qual, int bcIndex, int slave ->
     def seedOccurences = findAllMatches(seq, seed) // All seed occurences
-	if (barcode.length() < 30 && seq.length() < 30)
-	{
-		return -1
-	}
+//	if (barcode.length() < 30 && seq.length() < 30)
+//	{
+//		return -1
+//	}
 	
     for (int i = 0; i < seedOccurences.size(); i++) {
         if (hasFuzzyMatch(barcode, seq, qual, seedOccurences[i], bcIndex, slave))  // Exhaustive search
