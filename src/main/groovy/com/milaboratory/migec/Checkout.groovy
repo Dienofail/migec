@@ -138,7 +138,7 @@ def getSeed = { String barcode ->
 def getSeedSeq = { String barcode ->
 	def returnSeq = barcode.substring(0, 8)
 	//println(returnSeq)
-	assert returnSeq.length() == 8
+	//assert returnSeq.length() == 8
 	return returnSeq
 }
 
@@ -206,7 +206,7 @@ def HammingDistance = {String seq1, String seq2 ->
 	//println("[${new Date()} $scriptName] Seq 1 length is " + seq1.length())
 	//println("[${new Date()} $scriptName] Seq 2 length is " + seq2.length())
 
-	assert seq1.length() == seq2.length()
+	//assert seq1.length() == seq2.length()
 	for (int i = 0; i < seq1.length(); i++)
 	{
 		if (seq1.charAt(i) != seq2.charAt(i))
@@ -258,13 +258,17 @@ def hasFuzzyMatch = { String barcode, String seq, String qual, int from, int bcI
 }
 def findMatch = { String barcode, Pattern seed, String seq, String qual, int bcIndex, int slave ->
     def seedOccurences = findAllMatches(seq, seed) // All seed occurences
+	if (barcode.length() < 30 && seq.length() < 30)
+	{
+		return -1
+	}
 	
     for (int i = 0; i < seedOccurences.size(); i++) {
         if (hasFuzzyMatch(barcode, seq, qual, seedOccurences[i], bcIndex, slave))  // Exhaustive search
             return seedOccurences[i] // till first best match
     }
 	
-	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,3)
+	def seedFuzzyOccurences = findAllFuzzyMatches(seq,barcode,2)
 	
 	if (seedFuzzyOccurences.size() >= 1)
 	{
@@ -369,7 +373,6 @@ def wrapRead = { String[] readData, StringBuilder[] umiData, int readIndex, Stri
                  boolean good ->
     String umiHeader = umiData[0].size() > 0 ? " UMI:${umiData[0].toString()}:${umiData[1].toString()}" : ""
     readData[0] = readData[0] + umiHeader
-
     if (paired) {
         readData[3] = readData[3] + umiHeader
 
@@ -396,7 +399,7 @@ def wrapRead = { String[] readData, StringBuilder[] umiData, int readIndex, Stri
          nGoodReads = good ? goodReadCounter.incrementAndGet() : goodReadCounter.get(),
          nMasterFirst = (good && (readIndex > 0)) ? masterFirstCounter.incrementAndGet() : masterFirstCounter.get(),
          overlapCount = overlapCounter.get()
-
+ 
     if (good) {
         counters.get(sampleId)[0].incrementAndGet()
         if (paired) {
@@ -420,8 +423,8 @@ def wrapRead = { String[] readData, StringBuilder[] umiData, int readIndex, Stri
         if (paired)
             counters.get(sampleId)[1].incrementAndGet()
     }
-
-    if (nReads % 250000 == 0)
+	
+    if (nReads % 50000 == 0)
         println "[${new Date()} $scriptName] Processed $nReads, " +
                 "identified $nGoodReads (${((int) (10000 * (double) nGoodReads / (double) nReads)) / 100}%), " +
                 (overlap ? "overlapped ${((int) (10000 * (double) overlapCount / (double) nGoodReads)) / 100}% of them, " : "") +
@@ -509,7 +512,17 @@ for (int k = 0; k < nProcessors; k++) {
                 def umiData = new StringBuilder[2]
                 umiData[0] = new StringBuilder()
                 umiData[1] = new StringBuilder()
-
+//
+//				
+//				if (readCounter.get() == 48646 || readCounter.get() == 48647 )
+//				{
+//					continue
+//				}
+//				
+//				if (readCounter.get() > 48600)
+//				{
+//					print(readCounter.get() + "\t" + readData)
+//				}
                 // 1. Search master barcode
                 int sampleIndex = -1, readIndex = -1, from = -1
                 for (int i = 0; i < barcodeList[0].size(); i++) {

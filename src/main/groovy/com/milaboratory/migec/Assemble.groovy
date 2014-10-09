@@ -306,7 +306,7 @@ GParsPool.withPool THREADS, {
                 mig.each { Map.Entry<String, Integer> read ->
                     for (int offset = -offsetRange; offset <= offsetRange; offset++) {
                         String coreSeq = getCoreSeq(read.key, offset)
-						println "Currently testing ${coreSeq}"
+						//println "Currently testing ${coreSeq}"
                         int[] coreSeqData = coreSeqMap.get(coreSeq)
                         if (coreSeqData == null)
                             coreSeqMap.put(coreSeq, coreSeqData = new int[2])
