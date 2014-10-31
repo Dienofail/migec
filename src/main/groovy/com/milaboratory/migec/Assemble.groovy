@@ -35,6 +35,7 @@ cli.p(args: 1,
         "number of threads to use. Default: all available processors")
 cli.c("compressed output")
 cli._(longOpt: 'log-file', args: 1, argName: 'fileName', "File to output assembly log")
+cli._(longOpt: 'overwite-file', args: 1, argName: 'fileName', "Specify overwite file name")
 cli._(longOpt: 'log-overwrite', "Overwrites provided log file")
 cli._(longOpt: 'log-sample-name', "Sample name to use in log [default = N/A]")
 cli._(longOpt: 'log-sample-type', "Sample type to use in log, i.e. unpaired, paired and overlapped [default = N/A]")
@@ -83,7 +84,7 @@ def inputFileName1 = opt.arguments()[0],
     outputFilePrefix1 = '-', outputFilePrefix2 = '-'
 
 String logFileName = opt.'log-file' ?: null
-
+String overWriteFileName = opt.'overwrite-file' ?: null
 if (!(inputFileName1.endsWith(".fastq") || inputFileName1.endsWith(".fastq.gz"))) {
     println "[ERROR] Bad file extension $inputFileName1. Either .fastq or .fastq.gz should be provided as R1 file."
     System.exit(-1)

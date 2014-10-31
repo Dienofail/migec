@@ -337,7 +337,7 @@ for (int p = 0; p < THREADS; p++) { // split fasta for blast parallelizaiton
 
         // A trick to pass -outfmt argument correctly
         def blastCmd = ["${blastPath}blastn",
-                        "-query", "${queryFilePrefix}_${p}.fa", "-evalue", "1750", "-task", "blastn-short",
+                        "-query", "${queryFilePrefix}_${p}.fa", "-evalue", "1750", "-task", "blastn-short", "-strand", "both",
                         BLAST_FLAGS.split(" "),
                         "-gapopen", "$GAP_OPEN", "-gapextend", "$GAP_EXTEND",
                         "-word_size", "$WORD_SIZE", "-reward", "$REWARD", "-penalty", "$PENALTY",
